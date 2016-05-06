@@ -1,0 +1,114 @@
+
+\begin{document}
+\end{document}
+\title{A Short Course on Numerical Modelling using landscape evolution as an example}
+
+\section{Introduction}
+Geomorphology has advanced in the last few years. In particular, there are a series of equations.
+
+\subsection{Rate of incision:}
+Starting from flat you concentrate some water, which then starts to cut down. The sides of a small channel becomes a localised slope, leading to failure. Most of the action is on the walls of the valley, but the driver is the stream in the valley base.
+
+Valleys tend to get deeper over time, and downstream. Without uplift with respect to base level, you can not get incision. This uplift is some sort of tectonic process, and is what causes rivers.
+
+Rate of incision is proportional to:
+\begin{enumerate}
+\list Slope
+\list Discharge (Volume of Water / unit time)
+\end{enumerate}
+
+Rate of incision is as follows:
+\[
+\frac{\delta h}{\delta t} = U-k_{f}A^{m}S^{n}
+\]
+where $h =$ height, $t =$ time, $U =$ uplift, $S =$ slope, $A =$ catchment area, $k_f =$ fluvial erosion constant. $K_f = [10^8]$, $m/n = 0.4$ (therefore: $n=1, m=0.4$, and overall equation becomes 
+\[
+\frac{\delta h}{\delta t} = U-k_{f}A^{m=0.4}
+\]
+\emph{Catchment} is the area of a landscape that drains through a given point.
+
+This can be rewritten as:
+\[
+\frac{\delta h}{\delta t} = U-k_{f}A^{m} \frac{\delta h}{\delta x}
+\]
+for a given point x. Tells us how the change in time changes in relation to the change in time. Greater change in $h$ leads to more rapid change in $t$. You need to have an initial condition: $h( t = 0 )$. Can not see how things change without that. This also means that change in height for the entire area does not affect things. The value of the landscape needs to be fixed as well: $(h(x = x_0) = h_0$ as a boundary condition. This fixed height is termed \emph{base level}, which is usually at sea level.
+
+Base level can be changed by either raising the land or lowering the sea.
+
+\subsection{Slope Stuff}
+The angle of repose of dry sand is $30$\textdegree. This means that most slopes will eventually be about that.
+
+The transport law for sediment on slopes can be written as:
+\[
+q_s = -k_d S
+\]
+where q_s is the flux of sediment.
+$S$ we already know is $\frac{\delta h}{\delta x}$, so that simplifies to:
+\[
+q_s = -k_d \frac{\delta h}{\delta x}
+\]
+If the flux changes with space, then there is a change of height:
+\[
+\frac{\delta h}{\delta t} = -\frac{\delta q_s}{\delta x}
+\]
+This is a conservation of mass.
+
+\[
+\frac{\delta h}{\delta x} = -\frac{\delta q_s}{\delta x} = -\frac{\delta}{\delta x} \left(-k_d \frac{\delta h}{\delta x} \right)
+\]
+which can be combined to create:
+\[
+\frac{\delta h}{\delta t} = k_d \frac{\delta}{\delta x} \frac{\delta h}{\delta x} = k_d \frac{\delta^2 h}{\delta x^2}
+\]
+This is a diffusion equation, where positive curvature becomes negative, and negative curvature becomes positive, which leads, eventually in this case, to flat topography.
+
+So, we finally end up with:
+\[
+\frac{\delta h}{\delta t} = U- k_f A^m \frac{\delta h}{\delta x} + k_d
+ \frac{\delta^2 h}{\delta x^2}
+\]
+for a linear example. In 3D, this becomes:
+\[
+\frac{\delta h}{\delta t} = U- k_f A^m \frac{\delta h}{\delta x} + k_d \left(
+ \frac{\delta^2 h}{\delta x^2} + \frac{\delta^2 h}{\delta y^2} \right)
+\]
+where the last term ($k_d \left(
+ \frac{\delta^2 h}{\delta x^2} + \frac{\delta^2 h}{\delta y^2} \right)$) is a Laplacian $\nabla^2 h$, which are independent of the frame of reference.
+
+\subsection{Numerical Modelling}
+So with a boundary condition, this equation is difficult to actually solve, given that computers are limited to simple arithmetic. However, an approximation can be found using `dirty maths', aka: numerical modelling. For example: any continuous function $f(x)$ can be written as a sum of an infinite number of polynomials:
+\[
+f(x) = a_0 + a_1x + a_2_x^2 + a_3_x^3 + \ldots
+\] which can be reformatted as:
+\[
+f(x) = f(a) + (x-a)\frac{\delta f}{\delta x}(a) + \frac{(x-a)^2}{2!} \frac{\delta^2 f}{\delta x^2}(a) + \frac{(x-a)^3}{3!} \frac{\delta^3 f}{\delta x^3}(a) + \ldots
+\]
+but this is only true very close to $a$. So the second order Taylor approximation is good enough for us, and this is something that a computer can easily do.
+
+\subsection{DEMs}
+Using a matrix with heights, we can easily get computers to understand our data: elevation at a point.
+The height can be identified using the co-ordinates. To make things simpler, and only need one number to refer to a given location for a matrix with columns $m_x$, and rows $n_x$:
+\[
+h(x,y) = h(i,j) = k = i + (j-1) \times n_x
+\]
+
+So, if we have a mesh with a known height $h$ for each $i$, $j$, we can use first-order Taylor:
+\[
+f(x) = f(a) + (x-a)\frac{\delta f}{\delta x}(a)
+\]
+for a given $i$,$j$.
+\[
+h_{i,1j} = h_{ij} + \Delta x \frac{\delta h}{\delta x} ij
+\]
+\[
+\frac{\delta h}{\delta x}ij \simeq \frac{h_{i+1j} - h_{ij}}{\Delta x}
+\]
+\[
+\frac{\delta^2 h}{\delta x^2}ij \simeq \frac{h_{i+1j} - h_{ij}}{\Delta x^2}
+\]
+
+\section{Programming}
+\subsection{D8 Algorithm}
+This is a routing algorithm that looks for the neighbour that is steepest\footnote{You need the gradient, not the difference in height}.
+So for a given R, you have a receiver. This means that each node has a rec number associated with it. So we need to know what the donors of each node are. Each node will only give to one node, but may receive from many (up to 8, in theory. 
+\end{document}
