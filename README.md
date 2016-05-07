@@ -1,8 +1,8 @@
 This repository was created following a short course in Numerical Modelling using Landscape Evolution as an Example which was held at [Nelson Mandela Metropolitan University](http://www.nmmu.ac.za) during the 2 - 5 May 2016.
-The course was presented by [Prof Jean Braun](jeaun.braun@ujf-grenoble.fr) of Université Grenoble Alps.
+The course was presented by [Prof Jean Braun](jeaun.braun@ujf-grenoble.fr) of [Université Grenoble Alps](http://www.univ-grenoble-alpes.fr/en/)' Institute of Earth Sciences ([ISTerre](https://isterre.fr/?lang=en)).
 
-The `./notebook/` folder contains my own notes, written in the notebook during the course as to how some of the stuff works. It also contains the code, (in Python) at least as far as we went with it. This will generate a simple model either with a central peak or a east-west ridge.
+The [notebook](./notebook/) folder contains my own notes, written in a jupyter notebook during the course as to how some of the stuff works. It also contains Python code, at least as far as we went with it. This will generate a simple model either with a central peak or a east-west ridge, and show the effect of including diffusion off hillslopes. More extensive notes and lecture slides compiled by Prof Braun can be found [here](../notes/), although I think I managed to get most of it.
 
-If you just want some code to run (without much in the way of explanation), have a look in the `./scripts/` folder.
+If you just want some code to run (without much in the way of explanation), have a look in the [scripts](./scripts/) folder. `cyc_fastscape.py` will generate a ridgeline, `fastscape.py` will generate a central peak. Example scripts, written by Prof Braun are located in [another folder](./braun_scripts/). There are versions in Python, R, Fortran 90, and SciLab (which is a MatLab clone, and should work in the standard Matlab IDE).
 
-If you have a use for this sort of modelling, Prof Braun has made a Fortran programme available, called FastScape. This uses Paraview for visualisation.
+If you have a use for this sort of modelling, Prof Braun has made a Fortran programme available, called [FastScape](./braun_scripts/fastscape.tar.gz). For information on getting this working, please [contact him](jeaun.braun@ujf-grenoble.fr), since I have not tried using this yet. It uses [ParaView](http://www.paraview.org/) for visualisation.
