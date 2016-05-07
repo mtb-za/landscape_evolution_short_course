@@ -76,7 +76,7 @@ for outer_loop in range(101):
 			num_donors[k] += 1
 
 	#stack
-	nstack = [0]
+	nstack = [0] #This seems odd, but the code did not seem to work correctly if this was a regular number. Any suggestions would be welcome.
 	stack = [0 for i in range(nn)]
 	for ij in range(nn):
 		if rec_array[ij] == ij:
