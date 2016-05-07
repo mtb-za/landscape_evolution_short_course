@@ -6,15 +6,15 @@ from mpl_toolkits.mplot3d import Axes3D
 
 debug = False
 stop_uplift = False
-nx,ny = 101, 101
+nx,ny = 101, 101 #number of nodes
 nn = nx*ny
-xl, yl = 100000,100000
-kf = 0.0001
+xl, yl = 100000,100000 #model area
+kf = 0.0001 #erosion constant
 kd = 10 #diffusion constant
 n = 1
 m = 0.4
-u = 0.002
-dt = 10000
+u = 0.002 #uplift per time step in m
+dt = 10000 #time interval
 dx = xl/(nx-1) #change in x
 dy = yl/(ny-1) #change in y
 
@@ -32,7 +32,7 @@ def find_stack(ij, stack, nstack, donors, num_donors, debug):
             print ("Before: ",ij, "\t", k, "\t", nstack, "\n", stack) #Debugging comment
         find_stack(ijk, stack, nstack, donors, num_donors, debug)
 
-np.random.seed(123) #For checking that things are running the same each time.
+#np.random.seed(123) #For checking that things are running the same each time.
 h = []
 for i in range(nn):
     h.append(np.random.random())
@@ -40,7 +40,8 @@ for i in range(nn):
 for outer_loop in range(101):
 	if outer_loop == 50 and stop_uplift:
 		u = 0
-	
+
+    #receivers
 	rec_array = [i for i in range(nn)]
 	length =  [0 for i in range(nn)]
 	for i in range(nx):
@@ -64,6 +65,7 @@ for outer_loop in range(101):
 							rec_array[ij] = ijk
 							length[ij] = distance
 
+    #Calculating donors
 	num_donors = [0 for i in range(nn)]
 	donors = [[0 for i in range(nn)] for j in range(8)]
 
@@ -101,22 +103,21 @@ for outer_loop in range(101):
 		for j in range(1, ny-1):
 			ij = i+j*nx
 			h[ij] = h[ij] + u * dt
-		
+
 	#erode
 	for ij in range(nn):
 		ijk = stack[ij]
 		if rec_array[ijk] != ijk:
 			f = area[ij]**m*kf*dt / length[ijk]
 			h[ijk] = ( h[ijk] + f*h[rec_array[ijk]] ) / (1+f)
-	
-	
-	#stuff for diffusion:
+
+    #diffusion:
 	hp = []
 	hp = [h[ij] for ij in range(nn)]
-	
+
 	fact_x = dt*kd/dx**2
 	fact_y = dt*kd/dy**2
-	
+
 	for j in range(1,ny-1):
 		for i in range(1,nx-1):
 			ipj = i+j*nx
@@ -129,13 +130,13 @@ for outer_loop in range(101):
 			ijm = i+(j-1)*nx
 			if ijm < 0:
 				ijm = ny-1
-			
+
 			h[ij] = h[ij] + fact_x * ( hp[ipj] - 2*hp[ij] + hp[ijm] ) + fact_y * ( hp[ijp] - 2*hp[ij] + hp[ijm] )
-	
+
 	if outer_loop % 10 == 0:
 		print("snapshotting at", outer_loop, "iterations")
-		to_plot = np.array(h)
-		to_plot = np.reshape(h, (nx,ny))
+		to_plot = np.array(area)
+		to_plot = np.reshape(area, (nx,ny))
 		x = range(nx)
 		y = range(ny)
 
